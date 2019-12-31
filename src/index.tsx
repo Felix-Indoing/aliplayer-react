@@ -6,36 +6,35 @@ import './index.css'
 const SOURCE_URL = 'https://g.alicdn.com/de/prismplayer/2.8.7/aliplayer-min.js'
 
 interface Props {
-    config?: any;
+    config: any;
     onGetInstance?: Function;
+
+    [key: string]: any
 }
 
-const Aliplayer: FunctionComponent<Props> & { components: any } = ({ config, onGetInstance }) => {
-    if (!config) {
-        throw new Error('Missing Aliplayer config')
-    }
+const Aliplayer = React.forwardRef(({ config, onGetInstance, otherProps }: Props, ref: any) => {
+        const id = useMemo(() => `aliplayer-${Math.floor(Math.random() * 1000000)}`, [])
+        const player = useRef(null)
 
-    const id = useMemo(() => `aliplayer-${Math.floor(Math.random() * 1000000)}`, [])
-    const player = useRef(null)
+        useEffect(() => {
+            if (!id || player.current) { return }
 
-    useEffect(() => {
-        if (!id || player.current) { return }
+            fetchJsFromCDN(SOURCE_URL, ['Aliplayer'])
+                .then(([Aliplayer]) => {
+                    if (player.current) { return }
 
-        fetchJsFromCDN(SOURCE_URL, ['Aliplayer'])
-            .then(([Aliplayer]) => {
-                if (player.current) { return }
-                player.current = new Aliplayer({
-                    ...config,
-                    'id': id,
-                }, (player: any) => {
-                    onGetInstance && onGetInstance(player)
+                    player.current = new Aliplayer({
+                        ...config,
+                        'id': id,
+                    }, (player: any) => {
+                        onGetInstance && onGetInstance(player)
+                    })
                 })
-            })
-    }, [id, config])
+        }, [id, config])
 
-    return (<div id={id}></div>)
-}
+        return (<div {...otherProps} id={id} ref={ref}/>)
+    }
+)
 
-Aliplayer.components = window.AliPlayerComponent
-
+export const AliPlayerComponent = window.AliPlayerComponent
 export default Aliplayer
