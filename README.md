@@ -7,7 +7,7 @@ Current version: 2.8.2
 ## Installation
 
 ```
-npm i aliplayer-react
+npm i indoing-aliplayer-react
 ```
 
 ## Usage

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useMemo } from 'react'
-import fetchJsFromCDN from './fetch-js-from-cdn'
+import loadScript from './load-script'
 import './deps/aliplayercomponents-1.0.5.min.js'
 import './index.css'
 
@@ -19,7 +19,7 @@ const Aliplayer = React.forwardRef(({ config, onGetInstance, otherProps }: Props
         useEffect(() => {
             if (!id || player.current) { return }
 
-            fetchJsFromCDN(SOURCE_URL, ['Aliplayer'])
+            loadScript(SOURCE_URL, ['Aliplayer'])
                 .then(([Aliplayer]) => {
                     if (player.current) { return }
 

@@ -2,24 +2,24 @@ declare global {
     interface Window {[key: string]: any;}
 }
 
-async function addScriptTag(src: string): Promise<void> {
-    const element = document.createElement('script')
+async function addScriptTag(src: string): Promise<HTMLScriptElement> {
+    const element: HTMLScriptElement = document.createElement('script')
     element.setAttribute('src', src)
 
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<HTMLScriptElement>((resolve, reject) => {
         element.addEventListener('error', reject)
-        element.addEventListener('load', () => resolve())
+        element.addEventListener('load', () => resolve(element))
         document.body.appendChild(element)
     })
 }
 
 interface PromiseCache {
-    [key: string]: Promise<void>
+    [key: string]: Promise<HTMLScriptElement>
 }
 
 const promiseCache: PromiseCache = {}
 
-async function addScriptTagWithCache(src: string): Promise<void> {
+async function addScriptTagWithCache(src: string): Promise<HTMLScriptElement> {
     let cache = promiseCache[src]
     if (!cache) {
         cache = addScriptTag(src)
@@ -37,7 +37,7 @@ function getExpectFromWindow(expects: string[]): any[] {
     })
 }
 
-export default async function fetchJsFromCDN(src: string, expects: string[] = []): Promise<any[]> {
+export default async function loadScript(src: string, expects: string[] = []): Promise<any[]> {
     await addScriptTagWithCache(src)
     return getExpectFromWindow(expects)
 }
