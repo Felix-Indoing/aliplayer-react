@@ -2,22 +2,31 @@ declare global {
     interface Window {[key: string]: any;}
 }
 
-interface CacheItem {
-    element: HTMLElement
-    promise: Promise<void>
-}
-
-function addScriptTag(src: string): CacheItem {
+async function addScriptTag(src: string): Promise<void> {
     const element = document.createElement('script')
     element.setAttribute('src', src)
 
-    const promise = new Promise<void>((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
         element.addEventListener('error', reject)
         element.addEventListener('load', () => resolve())
         document.body.appendChild(element)
     })
+}
 
-    return { element, promise }
+interface PromiseCache {
+    [key: string]: Promise<void>
+}
+
+const promiseCache: PromiseCache = {}
+
+async function addScriptTagWithCache(src: string): Promise<void> {
+    let cache = promiseCache[src]
+    if (!cache) {
+        cache = addScriptTag(src)
+        promiseCache[src] = cache
+    }
+
+    return cache
 }
 
 function getExpectFromWindow(expects: string[]): any[] {
@@ -28,15 +37,8 @@ function getExpectFromWindow(expects: string[]): any[] {
     })
 }
 
-const CachedMap = new Map<string, CacheItem>()
 
 export default async function fetchJsFromCDN(src: string, expects: string[] = []): Promise<any[]> {
-    let cache = CachedMap.get(src)
-    if (cache) {
-        return cache.promise.then(() => getExpectFromWindow(expects))
-    } else {
-        cache = addScriptTag(src)
-        CachedMap.set(src, cache)
-        return cache.promise.then(() => getExpectFromWindow(expects))
-    }
+    await addScriptTagWithCache(src)
+    return getExpectFromWindow(expects)
 }
