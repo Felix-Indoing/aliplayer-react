@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useMemo, FunctionComponent } from 'react'
+import React, { useEffect, useRef, useMemo } from 'react'
 import fetchJsFromCDN from './fetch-js-from-cdn'
 import './deps/aliplayercomponents-1.0.5.min.js'
 import './index.css'

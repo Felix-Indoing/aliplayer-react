@@ -37,7 +37,6 @@ function getExpectFromWindow(expects: string[]): any[] {
     })
 }
 
-
 export default async function fetchJsFromCDN(src: string, expects: string[] = []): Promise<any[]> {
     await addScriptTagWithCache(src)
     return getExpectFromWindow(expects)
