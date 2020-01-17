@@ -1,15 +1,14 @@
 {
-  "name": "aliplayer-react",
-  "version": "0.5.0",
+  "name": "indoing-aliplayer-react",
+  "version": "1.0.0",
   "description": "React component wrapper for aliplayer.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc && cpx \"src/**/*.css\" lib && cpx \"src/deps/*\" lib/deps",
-    "prepare": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": "git@github.com:wangsijie/aliplayer-react.git",
+  "repository": "git@github.com:Felix-Indoing/aliplayer-react.git",
   "keywords": [
     "aliplayer",
     "react",
