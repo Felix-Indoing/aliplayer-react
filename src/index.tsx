@@ -29,17 +29,19 @@ const Aliplayer = React.forwardRef(({ config, onGetInstance, ...otherProps }: Pr
 
             resetPlayer()
 
-            loadScript(SOURCE_URL, ['Aliplayer'])
-                .then(([Aliplayer]) => {
-                    if (player.current) { return }
+            if (config) {
+                loadScript(SOURCE_URL, ['Aliplayer'])
+                    .then(([Aliplayer]) => {
+                        if (player.current) { return }
 
-                    player.current = new Aliplayer({
-                        ...config,
-                        'id': id,
-                    }, (player: any) => {
-                        onGetInstance && onGetInstance(player)
+                        player.current = new Aliplayer({
+                            ...config,
+                            'id': id,
+                        }, (player: any) => {
+                            onGetInstance && onGetInstance(player)
+                        })
                     })
-                })
+            }
 
             return (resetPlayer)
         }, [id, config, resetPlayer])
