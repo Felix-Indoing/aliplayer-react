@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useMemo } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef } from 'react'
 import loadScript from './load-script'
 import './deps/aliplayercomponents-1.0.5.min.js'
 import './index.css'
@@ -12,12 +12,22 @@ interface Props {
     [key: string]: any
 }
 
-const Aliplayer = React.forwardRef(({ config, onGetInstance, otherProps }: Props, ref: any) => {
+const Aliplayer = React.forwardRef(({ config, onGetInstance, ...otherProps }: Props, ref: any) => {
         const id = useMemo(() => `aliplayer-${Math.floor(Math.random() * 1000000)}`, [])
-        const player = useRef(null)
+        const player = useRef<any | null>(null)
+
+        const resetPlayer = useCallback(() => {
+            if (player && player.current && typeof player.current.dispose === 'function') {
+                player.current.dispose()
+                player.current = null
+                onGetInstance && onGetInstance(null)
+            }
+        }, [])
 
         useEffect(() => {
-            if (!id || player.current) { return }
+            if (!id) { return }
+
+            resetPlayer()
 
             loadScript(SOURCE_URL, ['Aliplayer'])
                 .then(([Aliplayer]) => {
@@ -30,10 +40,12 @@ const Aliplayer = React.forwardRef(({ config, onGetInstance, otherProps }: Props
                         onGetInstance && onGetInstance(player)
                     })
                 })
-        }, [id, config])
 
-        return (<div {...otherProps} id={id} ref={ref}/>)
-    }
+            return (resetPlayer)
+        }, [id, config, resetPlayer])
+
+        return (<div {...otherProps} id={id} ref={ref} />)
+    },
 )
 
 export const AliPlayerComponent = window.AliPlayerComponent
